@@ -39,7 +39,7 @@ tabsParent.addEventListener('click', (event) => {
 
 //timer
 
-const  deadline = '2020-08-02';
+const  deadline = '2020-10-06';
 
     function getTimeDifference(endtime){
         const t = Date.parse(endtime) - Date.parse(new Date()),
@@ -90,3 +90,40 @@ function setClock(selector, endtime){
 
 }
 setClock('.timer', deadline);
+
+//modal
+
+const modalButtons = document.querySelectorAll('.btn'),
+      modalWindow = document.querySelector('.modal'),
+      modalClose = document.querySelector('.modal__close');
+      
+
+function showModalWindow() {
+    modalWindow.style.display = 'block';
+    document.body.style.overflow = 'hidden'; 
+        clearInterval(timerModalWindow);
+    }
+
+function closeModalWindow() {
+    modalWindow.style.display = 'none';
+    document.body.style.overflow = '';
+
+}
+
+modalButtons.forEach(btn => {
+    btn.addEventListener('click', showModalWindow);
+});
+
+modalClose.addEventListener("click", closeModalWindow);
+
+const timerModalWindow = setTimeout(() => {
+    showModalWindow();
+}, 60000);
+
+function showModalByScroll() {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight) {
+        showModalWindow();
+        window.removeEventListener('scroll', showModalByScroll);
+    }
+}
+window.addEventListener('scroll', showModalByScroll);
