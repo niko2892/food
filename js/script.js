@@ -274,7 +274,54 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModalWindow();
         }, 4000);
     }
-    // fetch("http://localhost:3000/menu") //получаю данные из db.json
-    // .then(data => data.json())
-    // .then(result => console.log(result));
+   
+    //slider
+
+    const prev = document.querySelector(".offer__slider-prev"),
+          current = document.querySelector("#current"),
+          total = document.querySelector("#total"),
+          next = document.querySelector(".offer__slider-next"),
+          slides = document.querySelectorAll(".offer__slide");
+
+    let position = 1;
+
+    if (slides.length < 10) {
+        total.textContent = `0${slides.length}`;
+    } else {
+        total.textContent = slides.length;
+    }
+
+    function showSlide(n) {
+
+        if (n > slides.length) {
+            position = 1;
+        }
+
+        if (n < 1) {
+            position = slides.length;
+        }
+
+        slides.forEach(slide => {
+            slide.style.display = "none";
+        });
+
+        slides[position - 1].style.display = "block";
+
+        if (position < 10) {
+            current.textContent = `0${position}`;
+        } else {
+            current.textContent = position;
+        }
+
+    }
+
+    prev.addEventListener("click", () => {
+        showSlide(position += -1);
+    });
+
+    next.addEventListener("click", () => {
+        showSlide(position += 1);
+    });
+
+    showSlide(position);
 });
