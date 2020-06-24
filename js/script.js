@@ -217,10 +217,21 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     forms.forEach(item => { //add function postData for each form
-        postData(item);
+        bindPostData(item);
     });
 
-    function postData(form) { //create f, witch will send formData to server.php
+    const postData = async (url, data) => { //async, cause server will response after some time
+        const res = await fetch(url, { //have to wait here
+            method: "POST",
+            headers: { 
+                "Content-type": "application/json"
+            },
+            body: data
+        });
+        return await res.json(); //and here, because I'll wate promise
+    };
+
+    function bindPostData(form) { //create f, witch will send formData to server
         form.addEventListener('submit', (e) => {
             e.preventDefault(); //cancel reboot page after submit form
 
@@ -233,21 +244,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
             form.insertAdjacentElement('afterend', statusMessage); //add div with message after form
 
-            const request = new XMLHttpRequest();
-            request.open("POST", "server.php");
-
             const formData = new FormData(form); //arg form from func postData (FormData is spec.obj.)
-            request.send(formData); //POST data from forms
 
-            request.addEventListener('load', () => { //check request condition after submit form
-                if (request.status === 200) {
-                    console.log(request.response);
-                    showThanksModal(message.success); //message for user if all was good
-                    form.reset(); //clear form after form submit
-                    statusMessage.remove();
-                } else {
-                    showThanksModal(message.failure);
-                }
+            const object = {}; //create object for copy data from spec.formdata obj. here
+            formData.forEach(function(value, key){
+                object[key] = value; //copy spec. formdata obj to normal js object
+            });
+
+            postData("server.php", JSON.stringify(object))
+            .then(data => data.text())
+            .then(data =>{
+                console.log(data);
+                showThanksModal(message.success);
+                statusMessage.remove();
+            }).catch(() => {
+                showThanksModal(message.failure);
+            }).finally(() => {
+                form.reset();
             });
         });
     }
@@ -276,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModalWindow();
         }, 4000);
     }
-    fetch("db.json") //получаю данные из db.json
+    fetch("http://localhost:3000/menu") //получаю данные из db.json
     .then(data => data.json())
     .then(result => console.log(result));
 });
