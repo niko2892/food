@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+
     //tabs
+
     const tabsParent = document.querySelector('.tabheader__items'),
         tabsContent = document.querySelectorAll('.tabcontent'),
         tabsButtons = document.querySelectorAll('.tabheader__item');
@@ -95,8 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //modal
 
     const modalButtons = document.querySelectorAll('.btn'),
-        modalWindow = document.querySelector('.modal'),
-        modalClose = document.querySelector('.modal__close');
+          modalWindow = document.querySelector('.modal');
 
 
     function showModalWindow() {
@@ -115,13 +116,13 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', showModalWindow);
     });
 
-    modalClose.addEventListener("click", closeModalWindow);
 
-    modalWindow.addEventListener('click', (e) => { //закрытие при клике на подложку
-        if (e.target === modalWindow) {
+   modalWindow.addEventListener("click", (e) => {    //закрытие при клике на подложку и крестик
+        if (e.target === modalWindow || e.target.getAttribute('data-close') == "") {
             closeModalWindow();
         }
     });
+    
 
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Escape' && modalWindow.style.display == 'block') {
@@ -210,19 +211,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('form');
 
     const message = {
-        loading: "Loading",
+        loading: "img/form/spinner.svg",
         success: "Thank you! We will call you soon!",
         failure: "Something went wrong.."
     };
+
+    forms.forEach(item => { //add function postData for each form
+        postData(item);
+    });
 
     function postData(form) { //create f, witch will send formData to server.php
         form.addEventListener('submit', (e) => {
             e.preventDefault(); //cancel reboot page after submit form
 
-            const statusMessage = document.createElement("div"); //message for user
-            statusMessage.classList.add('status');
-            statusMessage.textContent = message.loading;
-            form.append(statusMessage); //add div with message to form
+            let statusMessage = document.createElement("img"); //message for user
+            statusMessage.src = message.loading;
+            statusMessage.style.cssText = `
+                display: block;
+                margin: 0 auto;
+            `;
+
+            form.insertAdjacentElement('afterend', statusMessage); //add div with message after form
 
             const request = new XMLHttpRequest();
             request.open("POST", "server.php");
@@ -233,18 +242,41 @@ document.addEventListener('DOMContentLoaded', () => {
             request.addEventListener('load', () => { //check request condition after submit form
                 if (request.status === 200) {
                     console.log(request.response);
-                    statusMessage.textContent = message.success; //message for user if all was good
-                    form.reset();
-                    setTimeout(() => {
-                        statusMessage.remove();
-                    }, 5000);
+                    showThanksModal(message.success); //message for user if all was good
+                    form.reset(); //clear form after form submit
+                    statusMessage.remove();
                 } else {
-                    statusMessage.textContent = message.failure;
+                    showThanksModal(message.failure);
                 }
             });
         });
     }
-    forms.forEach(item => { //add function postData to everyone form
-        postData(item);
-    });
+
+    function showThanksModal(message) {
+        const prevModalDialog = document.querySelector('.modal__dialog');
+
+        // prevModalDialog.classList.add('hide');
+        prevModalDialog.style.display = "none";
+        showModalWindow();
+
+        const thanksModal = document.createElement('div');
+        thanksModal.classList.add('modal__dialog');
+        thanksModal.innerHTML = `
+            <div class="modal__content">
+                <div class="modal__close" data-close>×</div>
+                <div class="modal__title">${message}</div>
+            </div>
+        `;
+        document.querySelector('.modal').append(thanksModal);
+        setTimeout(() => {
+            thanksModal.remove();
+            prevModalDialog.style.display = "block";
+            // prevModalDialog.classList.add('show');
+            // prevModalDialog.classList.remove('hide');
+            closeModalWindow();
+        }, 4000);
+    }
+    fetch("db.json") //получаю данные из db.json
+    .then(data => data.json())
+    .then(result => console.log(result));
 });
