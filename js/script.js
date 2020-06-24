@@ -178,35 +178,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    new Menu("img/tabs/vegy.jpg",
-        "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        '229',
-        ".menu .container", //добавляю класс как rest оператор для div
-        'menu__item'
-    ).createMenuItem();
+    const getResource = async (url) => { //получаю краточки меню из db.json
+        const res = await fetch(url); //делаю, чтобы фетч выкидывал ошибку
+            if(!res.ok){ //если что-то не так (.ок)
+                throw new Error(`Couldn't getch ${url}, status: ${res.status}`); //выкидываю(throw) объект ошибки 
+            }
+        return await res.json(); //and here, because I'll wate promise
+    };
 
-    new Menu("img/tabs/vegy.jpg",
-        "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        '229',
-        ".menu .container", //добавляю класс как rest оператор для div
-        'menu__item'
-    ).createMenuItem();
+    getResource('http://localhost:3000/menu')
+        .then(data => { //получаю карточки с сервера
+            data.forEach(({img, altimg, title, descr, price}) => { //дестриктуризация объектов карточек на сервере
+                new Menu(img, altimg, title, descr, price, ".menu .container").createMenuItem();
+            });
+        });
 
-    new Menu("img/tabs/vegy.jpg",
-        "vegy",
-        'Меню "Фитнес"',
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-        '229',
-        ".menu .container", //добавляю класс как rest оператор для div
-        'menu__item'
-    ).createMenuItem();
+    
 
-
-    //send formData to server.php
+    //send formData to server
 
     const forms = document.querySelectorAll('form');
 
@@ -245,14 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
             form.insertAdjacentElement('afterend', statusMessage); //add div with message after form
 
             const formData = new FormData(form); //arg form from func postData (FormData is spec.obj.)
+            
+            const json = JSON.stringify(Object.fromEntries(formData.entries())); //get norm object from FormData obj
 
-            const object = {}; //create object for copy data from spec.formdata obj. here
-            formData.forEach(function(value, key){
-                object[key] = value; //copy spec. formdata obj to normal js object
-            });
-
-            postData("server.php", JSON.stringify(object))
-            .then(data => data.text())
+            postData("http://localhost:3000/requests",json) //use fetch
             .then(data =>{
                 console.log(data);
                 showThanksModal(message.success);
@@ -289,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             closeModalWindow();
         }, 4000);
     }
-    fetch("http://localhost:3000/menu") //получаю данные из db.json
-    .then(data => data.json())
-    .then(result => console.log(result));
+    // fetch("http://localhost:3000/menu") //получаю данные из db.json
+    // .then(data => data.json())
+    // .then(result => console.log(result));
 });
