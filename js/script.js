@@ -352,12 +352,15 @@ document.addEventListener('DOMContentLoaded', () => {
         dots.push(dot); // добавляю новые точки в массив
     }
 
+    function deleteNotDigits(str){
+        return +str.replace(/\D/g, ''); //replace(/\D/g, '') - регулярное выражеие. убирает все НЕ числа
+    }
    
     next.addEventListener("click", () => {
-        if (offset == (+width.slice(0, width.length - 2) * (slides.length - 1))) { //если докрутил до последнего слайда
+        if (offset == deleteNotDigits(width) * (slides.length - 1)) { //если докрутил до последнего слайда 
             offset = 0; //возврат к первому
         } else {
-            offset += +width.slice(0, width.length - 2); //если нет, то добавляю на ширину слайда
+            offset += deleteNotDigits(width); //если нет, то добавляю на ширину слайда
         }
 
         slidesFiels.style.transform = `translateX(-${offset}px)`; //прокрутка слайдов
@@ -380,9 +383,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     prev.addEventListener("click", () => {
         if (offset == 0) { //если докрутил до первого слайда
-            offset = (+width.slice(0, width.length - 2) * (slides.length - 1)); //возврат к последему
+            offset = deleteNotDigits(width) * (slides.length - 1); //возврат к последему
         } else {
-            offset -= +width.slice(0, width.length - 2); //если нет, то добавляю на ширину слайда
+            offset -= deleteNotDigits(width); //если нет, то добавляю на ширину слайда
         }
 
         slidesFiels.style.transform = `translateX(-${offset}px)`;
@@ -408,7 +411,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const slideTo = e.target.getAttribute('data-slide-to');
 
             position = slideTo;
-            offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+            offset = deleteNotDigits(width) * (slideTo - 1);
 
             slidesFiels.style.transform = `translateX(-${offset}px)`;
 
