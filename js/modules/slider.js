@@ -1,15 +1,13 @@
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
     
-    //slider
-
-    const prev = document.querySelector(".offer__slider-prev"),
-          current = document.querySelector("#current"),
-          total = document.querySelector("#total"),
-          next = document.querySelector(".offer__slider-next"),
-          slides = document.querySelectorAll(".offer__slide"),
-          slider = document.querySelector(".offer__slider"),
-          slidesWrapper = document.querySelector(".offer__slider-wrapper"),
-          slidesFiels = document.querySelector(".offer__slider-inner"),
+    const prev = document.querySelector(prevArrow),
+          current = document.querySelector(currentCounter),
+          total = document.querySelector(totalCounter),
+          next = document.querySelector(nextArrow),
+          slides = document.querySelectorAll(slide),
+          slider = document.querySelector(container),
+          slidesWrapper = document.querySelector(wrapper),
+          slidesFiels = document.querySelector(field),
           width = window.getComputedStyle(slidesWrapper).width; //достаю назначенную браузером ширину слайда
 
     let position = 1,
@@ -153,4 +151,4 @@ function slider() {
 
 }
 
-module.exports = slider;
+export default slider;

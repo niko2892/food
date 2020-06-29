@@ -1,8 +1,11 @@
-function forms() {
+import {showModalWindow, closeModalWindow} from './modal';
+import {postData} from '../services/services';
+
+function forms(formSelector, timerModalWindow) {
     
 //send formData to server
 
-const forms = document.querySelectorAll('form');
+const forms = document.querySelectorAll(formSelector);
 
 const message = {
     loading: "img/form/spinner.svg",
@@ -13,17 +16,6 @@ const message = {
 forms.forEach(item => { //add function postData for each form
     bindPostData(item);
 });
-
-const postData = async (url, data) => { //async, cause server will response after some time
-    const res = await fetch(url, { //have to wait here
-        method: "POST",
-        headers: { 
-            "Content-type": "application/json"
-        },
-        body: data
-    });
-    return await res.json(); //and here, because I'll wate promise
-};
 
 function bindPostData(form) { //create f, witch will send formData to server
     form.addEventListener('submit', (e) => {
@@ -58,9 +50,8 @@ function bindPostData(form) { //create f, witch will send formData to server
 function showThanksModal(message) {
     const prevModalDialog = document.querySelector('.modal__dialog');
 
-    // prevModalDialog.classList.add('hide');
     prevModalDialog.style.display = "none";
-    showModalWindow();
+    showModalWindow('.modal', timerModalWindow);
 
     const thanksModal = document.createElement('div');
     thanksModal.classList.add('modal__dialog');
@@ -74,11 +65,9 @@ function showThanksModal(message) {
     setTimeout(() => {
         thanksModal.remove();
         prevModalDialog.style.display = "block";
-        // prevModalDialog.classList.add('show');
-        // prevModalDialog.classList.remove('hide');
-        closeModalWindow();
+        closeModalWindow('.modal');
     }, 4000);
 }
 }
 
-module.exports = forms;
+export default forms;

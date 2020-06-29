@@ -1,3 +1,5 @@
+import {getResource} from '../services/services';
+
 function cards() {
 
 //work with classes
@@ -37,14 +39,6 @@ class Menu {
     }
 }
 
-const getResource = async (url) => { //получаю краточки меню из db.json
-    const res = await fetch(url); //делаю, чтобы фетч выкидывал ошибку
-        if(!res.ok){ //если что-то не так (.ок)
-            throw new Error(`Couldn't getch ${url}, status: ${res.status}`); //выкидываю(throw) объект ошибки 
-        }
-    return await res.json(); //and here, because I'll wate promise
-};
-
 getResource('http://localhost:3000/menu')
     .then(data => { //получаю карточки с сервера
         data.forEach(({img, altimg, title, descr, price}) => { //дестриктуризация объектов карточек на сервере
@@ -54,4 +48,4 @@ getResource('http://localhost:3000/menu')
 
 }
 
-module.exports = cards;
+export default cards;
